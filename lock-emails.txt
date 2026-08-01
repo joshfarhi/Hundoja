@@ -1,0 +1,2 @@
+# Lock page email captures
+# Format: ISO timestamp<TAB>email

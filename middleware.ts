@@ -7,6 +7,16 @@ const isProtectedRoute = createRouteMatcher([
   '/admin(.*)'
 ])
 
+const PUBLIC_API_ROUTES = [
+  '/api/unlock',
+  '/api/lock-emails',
+  '/api/webhooks/stripe',
+]
+
+function isPublicApiRoute(pathname: string) {
+  return PUBLIC_API_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
+}
+
 export default clerkMiddleware(async (auth, req) => {
   const pathname = req.nextUrl.pathname
 
@@ -21,8 +31,8 @@ export default clerkMiddleware(async (auth, req) => {
     return
   }
 
-  // Allow APIs (including webhooks) to function without lock
-  if (pathname.startsWith('/api')) {
+  // Allow the lock/unlock flow and payment webhooks to function without a site unlock.
+  if (pathname.startsWith('/api') && isPublicApiRoute(pathname)) {
     return
   }
 
@@ -34,6 +44,10 @@ export default clerkMiddleware(async (auth, req) => {
   // Enforce site-wide lock unless unlock cookie is present
   const unlocked = req.cookies.get('hundoja_unlocked')
   if (!unlocked?.value) {
+    if (pathname.startsWith('/api')) {
+      return NextResponse.json({ error: 'Site is locked' }, { status: 423 })
+    }
+
     const url = req.nextUrl.clone()
     url.pathname = '/lock'
     url.search = ''
