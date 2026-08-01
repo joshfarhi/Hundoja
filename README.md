@@ -61,7 +61,7 @@ A modern e-commerce website built with Next.js, featuring Clerk authentication, 
    # Next.js
    NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-   # Lock page email capture
+   # Lock page email and phone capture
    # Fine-grained GitHub token with Contents read/write access to this repo.
    GITHUB_EMAIL_LOG_TOKEN=github_pat_...
    LOCK_EMAIL_LOG_PATH=lock-emails.txt

@@ -23,8 +23,17 @@ function getLogPath() {
   return logPath;
 }
 
-function getLogLine(email: string) {
-  return `${new Date().toISOString()}\t${email.toLowerCase()}\n`;
+type LockContact = {
+  email: string;
+  phone: string;
+};
+
+function cleanField(value: string) {
+  return value.replace(/[\r\n\t]/g, ' ').trim();
+}
+
+function getLogLine({ email, phone }: LockContact) {
+  return `${new Date().toISOString()}\t${cleanField(email).toLowerCase()}\t${cleanField(phone)}\n`;
 }
 
 function getEncodedRepoPath(filePath: string) {
@@ -121,6 +130,6 @@ async function appendViaGitHub(filePath: string, line: string) {
   }
 }
 
-export async function recordLockEmail(email: string) {
-  await appendViaGitHub(getLogPath(), getLogLine(email));
+export async function recordLockContact(contact: LockContact) {
+  await appendViaGitHub(getLogPath(), getLogLine(contact));
 }

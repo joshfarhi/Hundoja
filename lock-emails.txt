@@ -1,2 +1,2 @@
-# Lock page email captures
-# Format: ISO timestamp<TAB>email
+# Lock page contact captures
+# Format: ISO timestamp<TAB>email<TAB>phone

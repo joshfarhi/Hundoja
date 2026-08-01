@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Lock, Mail, Send } from 'lucide-react';
+import { Lock, Mail, Phone, Send } from 'lucide-react';
 
 export default function LockPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [isUnlockLoading, setIsUnlockLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function LockPage() {
       const res = await fetch('/api/lock-emails', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, phone }),
       });
 
       if (!res.ok) {
@@ -35,6 +36,7 @@ export default function LockPage() {
       }
 
       setEmail('');
+      setPhone('');
       setEmailSuccess(true);
     } catch {
       setError('Something went wrong. Please try again.');
@@ -126,6 +128,26 @@ export default function LockPage() {
               />
             </div>
 
+            <div className="relative">
+              <label htmlFor="phone" className="sr-only">Phone number</label>
+              <Phone
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300"
+                size={18}
+              />
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                autoComplete="tel"
+                inputMode="tel"
+                disabled={isEmailLoading}
+                className="w-full pl-10 pr-4 py-3 rounded-lg border bg-black/30 border-white/20 text-white placeholder-gray-300 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder="Phone number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+
             {emailSuccess && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -150,11 +172,11 @@ export default function LockPage() {
 
             <motion.button
               type="submit"
-              disabled={isEmailLoading || !email}
+              disabled={isEmailLoading || (!email && !phone)}
               aria-busy={isEmailLoading}
               className="w-full py-2 sm:py-3 px-4 sm:px-6 font-semibold transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-black hover:bg-gray-200 transform hover:scale-105 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-white/30"
-              whileHover={{ scale: isEmailLoading || !email ? 1 : 1.05 }}
-              whileTap={{ scale: isEmailLoading || !email ? 1 : 0.98 }}
+              whileHover={{ scale: isEmailLoading || (!email && !phone) ? 1 : 1.05 }}
+              whileTap={{ scale: isEmailLoading || (!email && !phone) ? 1 : 0.98 }}
             >
               {isEmailLoading ? (
                 <>
